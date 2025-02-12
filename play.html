@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play | TrashTrek</title>
+    <link rel="stylesheet" href="play.css">
+    <style>
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .uploaded-image {
+            max-width: 200px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            position: relative;
+            cursor: pointer;
+        }
+        .delete-button {
+            display: block;
+            margin: 5px auto;
+            padding: 5px 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .delete-button:hover {
+            background-color: darkred;
+        }
+        .image-container {
+            text-align: center;
+            margin: 10px;
+            position: relative;
+        }
+        .location-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 20px;
+            cursor: pointer;
+        }
+        #map-container {
+            position: relative;
+            display: none;
+        }
+        #map {
+            height: 300px;
+            width: 100%;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .close-map {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body id="play">
+    <header>
+        <div class="logo">
+            <h1>TrashTrek</h1>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="aboutus.html">About Us</a></li>
+                <li><a href="play.html" class="active">Play</a></li>
+                <li><a href="contactus.html">Contact Us</a></li>
+                <li><a href="rewards.html">Rewards</a></li>
+                <li><a href="nearbybins.html">Nearby Bins</a></li>
+                <li><a href="complaint.html">Complaint</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="gallery">
+            <div id="imageDisplayArea"></div>
+        </section>
+        <a href="upload.html" class="add-btn" title="Add New Location">+</a>
+        <div id="map-container">
+            <button class="close-map" onclick="closeMap()">X</button>
+            <div id="map"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 TrashTrek. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDa-g9F78fLXcQhvuHCQcdjMCpp7Bscr5w" async defer></script>
+    <script>
+        let map;
+        
+        function initMap(lat, lng) {
+            const location = { lat: lat, lng: lng };
+            if (!map) {
+                map = new google.maps.Map(document.getElementById("map"), {
+                    zoom: 15,
+                    center: location,
+                    mapTypeControl: false,
+                    streetViewControl: false
+                });
+            } else {
+                map.setCenter(location);
+            }
+            new google.maps.Marker({
+                position: location,
+                map: map
+            });
+            document.getElementById("map-container").style.display = "block";
+        }
+        
+        function closeMap() {
+            document.getElementById("map-container").style.display = "none";
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageDisplayArea = document.getElementById('imageDisplayArea');
+            const images = JSON.parse(localStorage.getItem('images')) || [];
+
+            images.forEach((image, index) => {
+                const container = document.createElement('div');
+                container.classList.add('image-container');
+
+                const imgElement = document.createElement('img');
+                imgElement.src = image.src;
+                imgElement.alt = image.location;
+                imgElement.classList.add('uploaded-image');
+                imgElement.onclick = function() {
+                    window.location.href = `uploadcleaned.html?location=${encodeURIComponent(image.location)}`;
+                    localStorage.setItem('selectedLocation', image.location);
+                };
+                container.appendChild(imgElement);
+                
+                const locationIcon = document.createElement('img');
+                locationIcon.src = 'https://img.icons8.com/ios-filled/50/000000/marker.png';
+                locationIcon.alt = 'Show Location';
+                locationIcon.classList.add('location-icon');
+                locationIcon.onclick = function(event) {
+                    event.stopPropagation();
+                    const latLng = image.location.split(',');
+                    const lat = parseFloat(latLng[0]);
+                    const lng = parseFloat(latLng[1]);
+                    initMap(lat, lng);
+                };
+                container.appendChild(locationIcon);
+
+                const locationElement = document.createElement('p');
+                locationElement.textContent = `Location: ${image.location}`;
+                container.appendChild(locationElement);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.classList.add('delete-button');
+                deleteButton.onclick = function() {
+                    images.splice(index, 1);
+                    localStorage.setItem('images', JSON.stringify(images));
+                    imageDisplayArea.removeChild(container);
+                };
+                container.appendChild(deleteButton);
+
+                imageDisplayArea.appendChild(container);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaint | TrashTrek</title>
+    <link rel="stylesheet" href="complaint.css">
+</head>
+<body id="complaint">
+    <header>
+        <div class="logo">
+            <h1>TrashTrek</h1>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="aboutus.html">About Us</a></li>
+                <li><a href="play.html">Play</a></li>
+                <li><a href="contactus.html">Contact Us</a></li>
+                <li><a href="rewards.html">Rewards</a></li>
+                <li><a href="nearbybins.html">Nearby Bins</a></li>
+                <li><a href="complaint.html" class="active">Complaint</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="form-section">
+            <h1>Submit a Complaint</h1>
+            <p>Help us identify problem areas by providing detailed information.</p>
+            <form action="/submit-complaint" method="post" enctype="multipart/form-data">
+                <label for="media">Upload Image/Video:</label>
+                <input type="file" id="media" name="media" accept="image/*,video/*" required>
+
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" placeholder="Enter the location" required>
+
+                <label for="details">Details:</label>
+                <textarea id="details" name="details" rows="4" placeholder="Provide additional details about the complaint" required></textarea>
+
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 TrashTrek. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

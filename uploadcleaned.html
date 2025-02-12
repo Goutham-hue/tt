@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Cleaned Image | TrashTrek</title>
+    <link rel="stylesheet" href="uploadcleaned.css">
+    <style>
+        #map {
+            height: 300px;
+            width: 100%;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body id="upload-cleaned">
+    <header>
+        <div class="logo">
+            <h1>TrashTrek</h1>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="aboutus.html">About Us</a></li>
+                <li><a href="play.html">Play</a></li>
+                <li><a href="contactus.html">Contact Us</a></li>
+                <li><a href="rewards.html">Rewards</a></li>
+                <li><a href="nearbybins.html">Nearby Bins</a></li>
+                <li><a href="complaint.html">Complaint</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="upload-form">
+            <h2>Upload Cleaned Image</h2>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label for="imageUpload">Choose Cleaned Image</label>
+                    <input type="file" id="imageUpload" name="image" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" name="location" placeholder="Enter location" required>
+                </div>
+                <button type="submit" class="submit-btn">Upload</button>
+            </form>
+        </section>
+        <div id="map"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 TrashTrek. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDa-g9F78fLXcQhvuHCQcdjMCpp7Bscr5w" async defer></script>
+    <script>
+        function initMap(lat, lng) {
+            const location = { lat: lat, lng: lng };
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 15,
+                center: location,
+                mapTypeControl: false,
+                streetViewControl: false
+            });
+            new google.maps.Marker({
+                position: location,
+                map: map
+            });
+            document.getElementById("map").style.display = "block";
+        }
+
+        document.getElementById('uploadForm').onsubmit = async function(event) {
+            event.preventDefault();
+            const imageUpload = document.getElementById('imageUpload').files[0];
+            const location = document.getElementById('location').value;
+            const selectedLocation = localStorage.getItem('selectedLocation');
+            
+            if (imageUpload && location && selectedLocation) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const uncleanedImages = JSON.parse(localStorage.getItem('images')) || [];
+                    const uncleanedImage = uncleanedImages.find(img => img.location === selectedLocation);
+                    
+                    if (!uncleanedImage) {
+                        alert('Uncleaned image not found.');
+                        return;
+                    }
+
+                    const result = await compareImages(uncleanedImage.src, e.target.result);
+                    
+                    if (result.error) {
+                        alert(result.error);
+                    } else if (result.cleaned) {
+                        uncleanedImage.completed = true;
+                        localStorage.setItem('images', JSON.stringify(uncleanedImages));
+                        window.location.href = 'play.html';
+                    } else {
+                        alert('The area is not cleaned.');
+                    }
+                }
+                reader.readAsDataURL(imageUpload);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const locationParam = urlParams.get('location');
+            if (locationParam) {
+                document.getElementById('location').value = decodeURIComponent(locationParam);
+                const latLng = locationParam.split(',');
+                if (latLng.length === 2) {
+                    const lat = parseFloat(latLng[0]);
+                    const lng = parseFloat(latLng[1]);
+                    initMap(lat, lng);
+                }
+            }
+        });
+
+        async function compareImages(uncleanedSrc, cleanedSrc) {
+            const response = await fetch('http://127.0.0.1:5000/compare_images', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uncleanedSrc, cleanedSrc })
+            });
+            return response.json();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    overflow: hidden; /* Prevent scrolling */
+}
+
+.container {
+    width: 200%; /* Double the width to accommodate both forms */
+    height: 100%;
+    display: flex;
+    transition: transform 0.6s ease-in-out; /* Smooth transition */
+    transform: translateX(0); /* Start with the login form visible */
+}
+
+.form-container {
+    width: 50%; /* Each form takes half of the container */
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
+}
+
+#login-container {
+    background: url('home.jpg') no-repeat center center; /* Background image for login */
+    background-size: cover; /* Cover the entire area */
+}
+
+#signup-container {
+    background: url('loginimage.jpg') no-repeat center center; /* Background image for sign-up */
+    background-size: cover; /* Cover the entire area */
+    display: none; /* Initially hide the sign-up form */
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: white; /* Change text color for better visibility */
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+p {
+    margin-top: 20px;
+    color: white; /* Change text color for better visibility */
+}
+
+a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
